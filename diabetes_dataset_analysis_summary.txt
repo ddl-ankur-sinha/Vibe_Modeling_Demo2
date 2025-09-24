@@ -1,0 +1,22 @@
+Dataset Analysis Summary
+========================
+Dataset path: ./Diabetes Dataset.csv
+Shape: (27000, 7)
+Columns: ['calories_wk', 'hrs_exercise_wk', 'exercise_intensity', 'annual_income', 'num_children', 'weight', 'is_diabetic']
+Target distribution:
+is_diabetic
+1    19577
+0     7423
+Name: count, dtype: int64
+Feature statistics:
+        calories_wk  hrs_exercise_wk  ...        weight   is_diabetic
+count  27000.000000     27000.000000  ...  27000.000000  27000.000000
+mean   12134.215852         1.800179  ...    221.115830      0.725074
+std     6209.468418         1.434249  ...     73.160187      0.446485
+min     1500.000000         0.100040  ...     40.017396      0.000000
+25%     6318.000000         0.816012  ...    164.869138      0.000000
+50%    12912.000000         1.462302  ...    252.420681      1.000000
+75%    17497.000000         2.159724  ...    276.340172      1.000000
+max    21999.000000         6.999350  ...    299.997818      1.000000
+
+[8 rows x 7 columns]

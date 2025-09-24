@@ -1,0 +1,8 @@
+Diabetes Dataset Preprocessing Summary
+======================================
+Original shape: (27000, 7)
+Final shape: (27000, 7)
+Sample retention: 100.0%
+Scaling method: RobustScaler
+Feature columns: ['calories_wk', 'hrs_exercise_wk', 'exercise_intensity', 'annual_income', 'num_children', 'weight']
+Files created: ['diabetes_dataset_preprocessed.csv', 'diabetes_dataset_train.csv', 'diabetes_dataset_val.csv', 'diabetes_scaler.joblib']

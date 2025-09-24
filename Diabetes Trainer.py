@@ -27,9 +27,16 @@ def load_data(file_path):
     X = df.drop('is_diabetic', axis=1).values
     y = df['is_diabetic'].values.reshape(-1, 1)
     
-    # Normalize the features
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+    # Check if data is already preprocessed (if using preprocessed files)
+    if "train.csv" in file_path or "val.csv" in file_path or "preprocessed.csv" in file_path:
+        # Data is already scaled, no need to scale again
+        X_scaled = X
+        print("Data appears to be preprocessed - skipping normalization")
+    else:
+        # Normalize the features
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        print("Applied StandardScaler normalization")
     
     # Convert to PyTorch tensors
     X_tensor = torch.FloatTensor(X_scaled)
@@ -129,22 +136,31 @@ def main():
             "model_filename": model_filename  # Log the model filename
         })
         
-        # Load and prepare data
-        X, y, num_features = load_data("diabetes_dataset.csv")
+        # Load and prepare data (use preprocessed data if available)
+        if os.path.exists("diabetes_dataset_train.csv") and os.path.exists("diabetes_dataset_val.csv"):
+            print("Using preprocessed training and validation data...")
+            X_train, y_train, num_features = load_data("diabetes_dataset_train.csv")
+            X_val, y_val, _ = load_data("diabetes_dataset_val.csv")
+            
+            # Create datasets directly from preprocessed splits
+            train_dataset = TensorDataset(X_train, y_train)
+            val_dataset = TensorDataset(X_val, y_val)
+            
+        else:
+            print("Using original dataset with random split...")
+            X, y, num_features = load_data("diabetes_dataset.csv")
+            
+            # Create dataset and split
+            dataset = TensorDataset(X, y)
+            train_size = int(0.8 * len(dataset))
+            val_size = len(dataset) - train_size
+            train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
         
         # Override input_features if different from dataset
         if args.input_features != num_features:
             print(f"Warning: Input features argument ({args.input_features}) doesn't match dataset features ({num_features})")
             args.input_features = num_features
             mlflow.log_param("input_features", num_features)
-        
-        # Create dataset
-        dataset = TensorDataset(X, y)
-        
-        # Split into train and validation sets (80% / 20%)
-        train_size = int(0.8 * len(dataset))
-        val_size = len(dataset) - train_size
-        train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
         
         # Create data loaders
         train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
