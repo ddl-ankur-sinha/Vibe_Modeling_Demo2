@@ -1,8 +1,32 @@
-import diabetes_model
-import pandas as pd
-import numpy as np
+# Import the diabetes model class
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
+# Import DiabetesModel class directly
+class DiabetesModel(nn.Module):
+    """
+    A simple feedforward neural network to predict diabetes.
+    """
+    def __init__(self, input_features=6, hidden_dim1=32, hidden_dim2=16, hidden_dim3=8 ):
+        super(DiabetesModel, self).__init__()
+        self.fc1 = nn.Linear(input_features, hidden_dim1)
+        self.fc2 = nn.Linear(hidden_dim1, hidden_dim2)
+        self.fc3 = nn.Linear(hidden_dim2, hidden_dim3)
+        self.fc4 = nn.Linear(hidden_dim3, 1)
+        self.dropout = nn.Dropout(0.3)
+
+    def forward(self, x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        x = self.dropout(x)
+        x = self.fc4(x)
+        output = torch.sigmoid(x)
+        return output
+
+import pandas as pd
+import numpy as np
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset, random_split
 from sklearn.preprocessing import StandardScaler
@@ -137,10 +161,14 @@ def main():
         })
         
         # Load and prepare data (use preprocessed data if available)
-        if os.path.exists("diabetes_dataset_train.csv") and os.path.exists("diabetes_dataset_val.csv"):
+        train_path = "/mnt/data/diabetes_dataset_train.csv"
+        val_path = "/mnt/data/diabetes_dataset_val.csv"
+        dataset_path = "/mnt/data/Diabetes Dataset.csv"
+        
+        if os.path.exists(train_path) and os.path.exists(val_path):
             print("Using preprocessed training and validation data...")
-            X_train, y_train, num_features = load_data("diabetes_dataset_train.csv")
-            X_val, y_val, _ = load_data("diabetes_dataset_val.csv")
+            X_train, y_train, num_features = load_data(train_path)
+            X_val, y_val, _ = load_data(val_path)
             
             # Create datasets directly from preprocessed splits
             train_dataset = TensorDataset(X_train, y_train)
@@ -148,7 +176,7 @@ def main():
             
         else:
             print("Using original dataset with random split...")
-            X, y, num_features = load_data("diabetes_dataset.csv")
+            X, y, num_features = load_data(dataset_path)
             
             # Create dataset and split
             dataset = TensorDataset(X, y)
@@ -167,7 +195,7 @@ def main():
         val_loader = DataLoader(val_dataset, batch_size=args.batch_size)
         
         # Initialize model, loss function, and optimizer
-        model = diabetes_model.DiabetesModel(
+        model = DiabetesModel(
             input_features=args.input_features,
             hidden_dim1=args.hidden_dim1,
             hidden_dim2=args.hidden_dim2,
