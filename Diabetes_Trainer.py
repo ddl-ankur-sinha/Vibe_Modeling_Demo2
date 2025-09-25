@@ -161,9 +161,9 @@ def main():
         })
         
         # Load and prepare data (use preprocessed data if available)
-        train_path = "/mnt/data/diabetes_dataset_train.csv"
-        val_path = "/mnt/data/diabetes_dataset_val.csv"
-        dataset_path = "/mnt/data/Diabetes Dataset.csv"
+        train_path = "/mnt/data/Vibe_Modeling_Demo/diabetes_dataset_train.csv"
+        val_path = "/mnt/data/Vibe_Modeling_Demo/diabetes_dataset_val.csv"
+        dataset_path = "/mnt/data/Vibe_Modeling_Demo/Diabetes Dataset.csv"
         
         if os.path.exists(train_path) and os.path.exists(val_path):
             print("Using preprocessed training and validation data...")
